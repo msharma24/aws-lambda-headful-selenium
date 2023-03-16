@@ -20,3 +20,16 @@ variable "vpc_subnet_ids" {
 
 
 }
+
+variable "availability_zone" {
+
+}
+
+
+
+variable "create_nat_gw" {
+  description = "Set to true to deploy NAT Gateway"
+  type        = bool
+
+}
+

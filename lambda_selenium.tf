@@ -14,7 +14,7 @@ module "selenium_lambda_function" {
   attach_network_policy = true
 
 
-  vpc_subnet_ids         = var.vpc_subnet_ids
+  vpc_subnet_ids         = [aws_subnet.nat_gw_subnet.id]
   vpc_security_group_ids = [module.selenium_lambda_security_group.security_group_id]
 
   environment_variables = {
