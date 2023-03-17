@@ -122,7 +122,12 @@ def lambda_handler(event, context):
     #
     print ("Starting...")
 
-    cinput = json.loads(event)
+    print(event)
+    print("--------------")
+    event = str(event)
+    print(event)
+    cinput = json.loads(event.replace('\'', '"'))
+
 
 
     """
@@ -406,6 +411,7 @@ def lambda_handler(event, context):
 
 
     page.quit()  
+    print (json.dumps(output))
     exit()
 
 
