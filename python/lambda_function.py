@@ -3,6 +3,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.proxy import Proxy, ProxyType
 import json
 import sys
+import os
 import time
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from pyvirtualdisplay import Display
@@ -17,14 +18,31 @@ from shapely.geometry import Polygon
 import atexit
 import warnings
 import random
+import shutil
+import subprocess
 warnings.filterwarnings("ignore", category=DeprecationWarning) 
+
+BIN_DIR = "/tmp/bin"
+CURR_BIN_DIR = os.getcwd() + "/bin"
 
 
 #kill -9 $(ps -eo comm,pid,etimes | awk '/^chrome/ {if ($3 > 320) { print $2}}')
 #ps aux | grep chromedriver | wc -l
 #ps aux | grep /opt/google/chrome/chrome | grep pallas.p.shifter.io | wc -l
 
-
+def _init_bin(executable_name):
+    start = time.process_time()()
+    if not os.path.exists(BIN_DIR):
+        print("Creating bin folder")
+        os.makedirs(BIN_DIR)
+    print("Copying binaries for " + executable_name + " in /tmp/bin")
+    currfile = os.path.join(CURR_BIN_DIR, executable_name)
+    newfile = os.path.join(BIN_DIR, executable_name)
+    shutil.copy2(currfile, newfile)
+    print("Giving new binaries permissions for lambda")
+    os.chmod(newfile, 0o775)
+    elapsed = time.process_time()() - start
+    print(executable_name + " ready in " + str(elapsed) + "s.")
 
 
 def findSeatmap2(sectionId):    
@@ -121,6 +139,8 @@ def send(driver, cmd, params={}):
 def lambda_handler(event, context):
     #
     print ("Starting...")
+    _init_bin("chromedriver")
+
 
     print(event)
     print("--------------")
@@ -189,7 +209,7 @@ def lambda_handler(event, context):
 
 
 
-    page = webdriver.Chrome('/home/ubuntu/chromedriver',chrome_options=chrome_options,desired_capabilities=d)
+    page = webdriver.Chrome('/tmp/bin/chromedriver',chrome_options=chrome_options,desired_capabilities=d)
 
     page.execute_cdp_cmd('Network.setUserAgentOverride', {"userAgent": userAgent})
     page.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
