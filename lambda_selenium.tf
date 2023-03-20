@@ -8,12 +8,12 @@ module "selenium_lambda_function" {
   create_role   = true
 
   memory_size = "128"
-  timeout     = "120"
+  timeout     = "60"
 
-  source_path            = "./python/lambda_function.py"
-  local_existing_package = module.package_dir.local_filename
-  create_package         = false
-  attach_network_policy  = true
+  source_path = "./python/lambda_function.py"
+  #local_existing_package = module.package_dir.local_filename
+  create_package        = true
+  attach_network_policy = true
 
 
   vpc_subnet_ids         = [aws_subnet.nat_gw_subnet.id]
@@ -70,26 +70,25 @@ EOF
 
 
 
+
 # # Lambda Permission
-resource "aws_lambda_permission" "selenium_parser_apigw_lambda_permission" {
+resource "aws_lambda_permission" "mercury_parser_apigw_lambda_permission" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
   function_name = module.selenium_lambda_function.lambda_function_name
   principal     = "apigateway.amazonaws.com"
 
   # More: http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html
-  source_arn = "arn:aws:execute-api:${local.region}:${local.account_id}:${aws_api_gateway_rest_api.selenium_rest_api.id}/*/${aws_api_gateway_method.selenium_rest_api_parser_get.http_method}${aws_api_gateway_resource.selenium_rest_api_parser.path}"
+  source_arn = "arn:aws:execute-api:${local.region}:${local.account_id}:${aws_api_gateway_rest_api.mercury_rest_api.id}/*/${aws_api_gateway_method.mercury_rest_api_parser_get.http_method}${aws_api_gateway_resource.mercury_rest_api_parser.path}"
 }
 
 
-
-resource "aws_lambda_permission" "selenium_parser_apigw_lambda_permission_2" {
+resource "aws_lambda_permission" "mercury_parser_apigw_lambda_permission_2" {
   statement_id  = "AllowExecutionFromAPIGateway2"
   action        = "lambda:InvokeFunction"
   function_name = module.selenium_lambda_function.lambda_function_name
   principal     = "apigateway.amazonaws.com"
 
   # More: http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html
-  source_arn = "arn:aws:execute-api:${local.region}:${local.account_id}:${aws_api_gateway_rest_api.selenium_rest_api.id}/*/${aws_api_gateway_method.selenium_rest_api_parse_html_post.http_method}${aws_api_gateway_resource.selenium_rest_api_parse_html.path}"
+  source_arn = "arn:aws:execute-api:${local.region}:${local.account_id}:${aws_api_gateway_rest_api.mercury_rest_api.id}/*/${aws_api_gateway_method.mercury_rest_api_parse_html_post.http_method}${aws_api_gateway_resource.mercury_rest_api_parse_html.path}"
 }
-

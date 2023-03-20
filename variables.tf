@@ -33,3 +33,7 @@ variable "create_nat_gw" {
 
 }
 
+
+variable "s3_bucket_name" {
+
+}
